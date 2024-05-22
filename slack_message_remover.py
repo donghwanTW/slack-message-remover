@@ -20,6 +20,9 @@ config = dotenv_values(".env")
 token = config.get("SLACK_BOT_TOKEN") or os.environ.get("SLACK_BOT_TOKEN")
 channel_id = config.get("CHANNEL_ID") or os.environ.get("CHANNEL_ID")
 
+if channel_id is None:
+    raise ValueError("CHANNEL_ID is not set.")
+
 
 def fetch_recent_messages(client: "WebClient") -> list[dict]:
     try:
@@ -64,7 +67,7 @@ def delete_message(client: "WebClient", message: dict) -> bool:
         return False
 
 
-def delete_message_include_keywords(client: "WebClient", messages: dict, keywords: list[str]) -> int:
+def delete_message_include_keywords(client: "WebClient", messages: list, keywords: list[str]) -> int:
     deleted_count = 0
     for message in messages:
         text = extract_text_from_slack_message(message)
